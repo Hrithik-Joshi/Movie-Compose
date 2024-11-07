@@ -1,4 +1,4 @@
-package com.hrithik.moviecompose.models
+package com.hrithik.moviecompose.model.entities
 
 data class Movie(
     val adult: Boolean,
