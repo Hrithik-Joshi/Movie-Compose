@@ -1,6 +1,6 @@
-package com.hrithik.moviecompose.api
+package com.hrithik.moviecompose.model.api
 
-import com.hrithik.moviecompose.models.MovieResponse
+import com.hrithik.moviecompose.model.entities.MovieResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
