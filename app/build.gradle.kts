@@ -73,4 +73,8 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     //stateflow
     implementation(libs.kotlinx.coroutines.core.jvm)
+    //koin
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose.v340)
 }
