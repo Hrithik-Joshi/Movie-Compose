@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -48,40 +49,47 @@ import org.koin.androidx.compose.koinViewModel
 fun MovieCardList(movieListViewModel: MovieListViewModel = koinViewModel()) {
     val movieDetails by movieListViewModel.movieListUIState.collectAsState()
 
-    when (movieDetails.movieUIState) {
-        MovieListViewModel.MovieListViewModelState.IN_PROGRESS -> {
-            CircularProgressIndicator(
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        when (movieDetails.movieUIState) {
+            MovieListViewModel.MovieListViewModelState.IN_PROGRESS -> {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(alignment = Alignment.Center)
+                )
+            }
 
-        MovieListViewModel.MovieListViewModelState.ERROR_MOVIE_LIST -> {
-            Text(
-                text = "Failed to load movies. Please try again.",
-                modifier = Modifier.fillMaxSize(),
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
-        }
+            MovieListViewModel.MovieListViewModelState.ERROR_MOVIE_LIST -> {
+                Text(
+                    text = "Failed to load movies. Please try again.",
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+            }
 
-        else -> {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFF003366)),
-                contentPadding = PaddingValues(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(movieDetails.movies.size) { index ->
-                    val movie = movieDetails.movies[index]
-                    MovieCard(
-                        imageUrl = movie.imageUrl,
-                        likes = movie.popularity,
-                        title = movie.movieTitle,
-                        releaseDate = movie.releaseDate
-                    )
+            else -> {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFF003366)),
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(movieDetails.movies.size) { index ->
+                        val movie = movieDetails.movies[index]
+                        MovieCard(
+                            imageUrl = movie.imageUrl,
+                            likes = movie.popularity,
+                            title = movie.movieTitle,
+                            releaseDate = movie.releaseDate
+                        )
+                    }
                 }
             }
         }
