@@ -21,13 +21,15 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
     data class MovieData(
         val movieTitle: String? = null,
         val releaseDate: String? = null,
-        val popularity: Int? = null,
+        val popularity: Int? = null, // Converted to percentage
         val imageUrl: String? = null,
     )
 
     data class MovieUIState(
         val movies: List<MovieData> = emptyList(),
-        val movieUIState: MovieListViewModelState = MovieListViewModelState.INIT
+        val movieUIState: MovieListViewModelState = MovieListViewModelState.INIT,
+        val currentPage: Int = 1,
+        val isLoadingNextPage: Boolean = false
     )
 
     private val _movieListUIState = MutableStateFlow(MovieUIState())
@@ -41,8 +43,8 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
         _movieListUIState.update { it.copy(movieUIState = MovieListViewModelState.IN_PROGRESS) }
         viewModelScope.launch {
             try {
-                val movies = movieRepository.getPopularMovies("c51c823be371778659b3eb1cc37de357")
-                val movieDataList = movies.map { movie ->
+                val response = movieRepository.getPopularMovies("c51c823be371778659b3eb1cc37de357", 1)
+                val movieDataList = response.results.map { movie ->
                     MovieData(
                         movieTitle = movie.title,
                         releaseDate = movie.release_date,
@@ -52,15 +54,42 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
                 }
                 _movieListUIState.update {
                     it.copy(
-                        movies = movieDataList,
-                        movieUIState = MovieListViewModelState.SUCCESS_MOVIE_LIST
+                        movies = it.movies + movieDataList,
+                        movieUIState = MovieListViewModelState.SUCCESS_MOVIE_LIST,
+                        currentPage = response.page,
                     )
                 }
             } catch (e: Exception) {
                 _movieListUIState.update {
-                    e.printStackTrace()
                     it.copy(movieUIState = MovieListViewModelState.ERROR_MOVIE_LIST)
                 }
+            }
+        }
+    }
+
+    fun loadNextPage() {
+        val currentPage = _movieListUIState.value.currentPage
+        _movieListUIState.update { it.copy(isLoadingNextPage = true) }
+        viewModelScope.launch {
+            try {
+                val movieResponse = movieRepository.getPopularMovies("c51c823be371778659b3eb1cc37de357", currentPage + 1)
+                val newMovies = movieResponse.results.map { movie ->
+                    MovieData(
+                        movieTitle = movie.title,
+                        releaseDate = movie.release_date,
+                        popularity = (movie.vote_average?.times(10))?.toInt(),
+                        imageUrl = movie.poster_path
+                    )
+                }
+                _movieListUIState.update {
+                    it.copy(
+                        movies = it.movies + newMovies,
+                        currentPage = currentPage + 1,
+                        isLoadingNextPage = false
+                    )
+                }
+            } catch (e: Exception) {
+                _movieListUIState.update { it.copy(isLoadingNextPage = false) }
             }
         }
     }

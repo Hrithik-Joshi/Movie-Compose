@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,8 +22,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,7 +51,15 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun MovieCardList(movieListViewModel: MovieListViewModel = koinViewModel()) {
     val movieDetails by movieListViewModel.movieListUIState.collectAsState()
-
+    val scrollState = rememberLazyGridState()
+    LaunchedEffect(scrollState) {
+        snapshotFlow { scrollState.layoutInfo.visibleItemsInfo }
+            .collect { visibleItems ->
+                if (visibleItems.lastOrNull()?.index == movieDetails.movies.lastIndex) {
+                    movieListViewModel.loadNextPage()
+                }
+            }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -74,6 +85,7 @@ fun MovieCardList(movieListViewModel: MovieListViewModel = koinViewModel()) {
             else -> {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
+                    state = scrollState,
                     modifier = Modifier
                         .fillMaxSize()
                         .background(Color(0xFF003366)),
@@ -89,6 +101,21 @@ fun MovieCardList(movieListViewModel: MovieListViewModel = koinViewModel()) {
                             title = movie.movieTitle,
                             releaseDate = movie.releaseDate
                         )
+                    }
+                    if (movieDetails.isLoadingNextPage) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier
+                                        .align(alignment = Alignment.Center)
+                                )
+                            }
+                        }
                     }
                 }
             }
