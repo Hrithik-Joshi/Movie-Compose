@@ -21,7 +21,7 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
     data class MovieData(
         val movieTitle: String? = null,
         val releaseDate: String? = null,
-        val popularity: Double? = null,
+        val popularity: Int? = null,
         val imageUrl: String? = null,
     )
 
@@ -46,7 +46,7 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
                     MovieData(
                         movieTitle = movie.title,
                         releaseDate = movie.release_date,
-                        popularity = movie.popularity,
+                        popularity = (movie.vote_average?.times(10))?.toInt(),
                         imageUrl = movie.poster_path
                     )
                 }
@@ -58,6 +58,7 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
                 }
             } catch (e: Exception) {
                 _movieListUIState.update {
+                    e.printStackTrace()
                     it.copy(movieUIState = MovieListViewModelState.ERROR_MOVIE_LIST)
                 }
             }

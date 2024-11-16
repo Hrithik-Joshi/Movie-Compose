@@ -13,9 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.hrithik.moviecompose.ui.screens.MovieCardList
 import com.hrithik.moviecompose.ui.theme.MovieComposeTheme
 import com.hrithik.moviecompose.viewModel.MovieListViewModel
-import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.context.GlobalContext.startKoin
 
 class MainActivity : ComponentActivity() {
     private val movieListViewModel: MovieListViewModel by viewModel()
@@ -23,10 +21,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        startKoin {
-            androidContext(this@MainActivity)
-            modules(appModule)
-        }
         setContent {
             MovieComposeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
