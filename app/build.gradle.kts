@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.hrithik.moviecompose"
-        minSdk = 24
+        minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -57,6 +57,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.androidx.animation)
+    implementation(libs.androidx.navigation.compose)
     //viewmodel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     //retrofit

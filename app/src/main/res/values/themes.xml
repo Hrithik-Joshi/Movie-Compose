@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.MovieCompose" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.MovieCompose" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Use a custom background for splash screen -->
+        <item name="android:windowSplashScreenBackground">#FF003366</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/moviesplash</item>
+        <item name="android:windowSplashScreenAnimationDuration">2000</item>
+
+    </style>
 </resources>
