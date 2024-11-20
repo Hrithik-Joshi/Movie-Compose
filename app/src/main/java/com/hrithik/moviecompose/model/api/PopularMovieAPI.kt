@@ -15,4 +15,10 @@ interface PopularMovieAPI {
         @Query("page") page: Int = 1
     ): MovieResponse
 
+    @GET("search/movie")
+    suspend fun searchMovies(
+        @Query("api_key") apiKey: String,
+        @Query("query") query: String,
+        @Query("page") page: Int
+    ): MovieResponse
 }
