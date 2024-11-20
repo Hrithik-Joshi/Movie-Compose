@@ -63,7 +63,7 @@ fun MovieCardList(movieListViewModel: MovieListViewModel = koinViewModel()) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color(0xFF003366))
     ) {
         when (movieDetails.movieUIState) {
             MovieListViewModel.MovieListViewModelState.IN_PROGRESS -> {
@@ -77,7 +77,7 @@ fun MovieCardList(movieListViewModel: MovieListViewModel = koinViewModel()) {
                 Text(
                     text = "Failed to load movies. Please try again.",
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.White,
+                    color = Color.Black,
                     textAlign = TextAlign.Center
                 )
             }

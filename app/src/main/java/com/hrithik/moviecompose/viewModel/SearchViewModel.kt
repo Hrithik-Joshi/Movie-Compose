@@ -2,10 +2,8 @@ package com.hrithik.moviecompose.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hrithik.moviecompose.model.entities.Movie
 import com.hrithik.moviecompose.model.repository.MovieRepository
 import com.hrithik.moviecompose.viewModel.MovieListViewModel.MovieListViewModelState
-import com.hrithik.moviecompose.viewModel.MovieListViewModel.MovieUIState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,14 +12,12 @@ import kotlinx.coroutines.launch
 
 class SearchViewModel(private val movieRepository: MovieRepository) : ViewModel() {
 
-    private val _movies = MutableStateFlow<List<Movie>>(emptyList())
-    val movies: StateFlow<List<Movie>> = _movies
-
     enum class SearchViewModelState {
         INIT,
         IN_PROGRESS,
         SUCCESS_MOVIE_LIST,
-        ERROR_MOVIE_LIST
+        ERROR_MOVIE_LIST,
+        NO_RESULTS
     }
 
     data class MovieData(
@@ -39,6 +35,7 @@ class SearchViewModel(private val movieRepository: MovieRepository) : ViewModel(
     val searchMovieUIState: StateFlow<SearchMovieUIState> = _searchMovieUIState.asStateFlow()
 
     fun searchMovies(apiKey: String, query: String) {
+        _searchMovieUIState.update { it.copy(movieUIState = SearchViewModelState.IN_PROGRESS) }
         viewModelScope.launch {
             try {
                 val response = movieRepository.searchMovies(apiKey, query)
@@ -50,14 +47,25 @@ class SearchViewModel(private val movieRepository: MovieRepository) : ViewModel(
                         imageUrl = movie.poster_path
                     )
                 }
-                _searchMovieUIState.update {
-                    it.copy(
-                        movies = it.movies + movieDataList,
-                        movieUIState = SearchViewModelState.SUCCESS_MOVIE_LIST
-                    )
+                if (movieDataList.isEmpty()) {
+                    _searchMovieUIState.update {
+                        it.copy(
+                            movies = emptyList(),
+                            movieUIState = SearchViewModelState.NO_RESULTS
+                        )
+                    }
+                } else {
+                    _searchMovieUIState.update {
+                        it.copy(
+                            movies = movieDataList,
+                            movieUIState = SearchViewModelState.SUCCESS_MOVIE_LIST
+                        )
+                    }
                 }
             } catch (e: Exception) {
-                _movies.value = emptyList()
+                _searchMovieUIState.update {
+                    it.copy(movieUIState = SearchViewModelState.ERROR_MOVIE_LIST)
+                }
             }
         }
     }
