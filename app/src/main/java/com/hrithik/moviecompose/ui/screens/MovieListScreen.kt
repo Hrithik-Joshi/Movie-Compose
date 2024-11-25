@@ -63,7 +63,6 @@ fun MovieCardList(movieListViewModel: MovieListViewModel = koinViewModel()) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF003366))
     ) {
         when (movieDetails.movieUIState) {
             MovieListViewModel.MovieListViewModelState.IN_PROGRESS -> {
@@ -87,8 +86,7 @@ fun MovieCardList(movieListViewModel: MovieListViewModel = koinViewModel()) {
                     columns = GridCells.Fixed(2),
                     state = scrollState,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color(0xFF003366)),
+                        .fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -122,89 +120,6 @@ fun MovieCardList(movieListViewModel: MovieListViewModel = koinViewModel()) {
         }
     }
 }
-
-
-@Composable
-fun MovieCard(
-    imageUrl: String?,
-    likes: Int?,
-    title: String?,
-    releaseDate: String?,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .height(280.dp),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1F2A44))
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-            ) {
-                AsyncImage(
-                    model = "https://image.tmdb.org/t/p/w500/${imageUrl}",
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(8.dp))
-                )
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(8.dp)
-                        .offset(y = 28.dp)
-                ) {
-                    likes?.let {
-                        CustomerCircularProgressBar(
-                            progress = it,
-                            startAngle = 180f,
-                            size = 40.dp,
-                            strokeWidth = 5.dp,
-                            progressArcColor1 = Color(0xFFD4AF37),
-                            progressArcColor2 = Color(0xFFFFC300),
-                            backgroundArcColor = Color(0xFF4A4A4A),
-                            modifier = Modifier.align(Alignment.BottomStart)
-                        )
-                    }
-                    Text(
-                        text = "$likes%",
-                        color = Color.White,
-                        fontSize = 12.sp,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-            }
-            if (title != null) {
-                Text(
-                    text = title,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    lineHeight = 16.sp,
-                    color = Color(0xFFF0F0F0),
-                    modifier = Modifier.padding(top = 25.dp)
-                )
-            }
-            if (releaseDate != null) {
-                Text(
-                    text = releaseDate,
-                    fontSize = 12.sp,
-                    color = Color(0xFFB0B0B0)
-                )
-            }
-        }
-    }
-}
-
 
 @Composable
 fun CustomerCircularProgressBar(

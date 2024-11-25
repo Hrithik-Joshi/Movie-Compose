@@ -1,5 +1,6 @@
 package com.hrithik.moviecompose.ui.screens
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
@@ -7,14 +8,18 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun BottomNavigationBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
@@ -29,14 +34,14 @@ fun BottomNavigationBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
             title = "Search",
             selectedIcon = Icons.Filled.Search,
             unselectedIcon = Icons.Outlined.Search,
-            notification = true,
-            badgeCount = 5
+            notification = false,
         ),
         BottomNavigationItem(
             title = "Favorites",
             selectedIcon = Icons.Filled.Favorite,
             unselectedIcon = Icons.Outlined.Favorite,
-            notification = false
+            notification = true,
+            badgeCount = 5
         )
     )
 
@@ -49,7 +54,14 @@ fun BottomNavigationBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
                     BadgedBox(
                         badge = {
                             if (item.notification && item.badgeCount != null) {
-                                Text(text = item.badgeCount.toString())
+                                Badge(
+                                    modifier = Modifier.padding(4.dp),
+                                    contentColor = Color.White,
+                                    containerColor = Color.Red
+                                ) {
+                                    Text(text = item.badgeCount.toString(),
+                                        style = MaterialTheme.typography.bodySmall)
+                                }
                             }
                         }
                     ) {
