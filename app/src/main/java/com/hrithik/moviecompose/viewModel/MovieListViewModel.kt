@@ -23,6 +23,7 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
         val releaseDate: String? = null,
         val popularity: Int? = null, // Converted to percentage
         val imageUrl: String? = null,
+        val overview: String? = null
     )
 
     data class MovieUIState(
@@ -44,12 +45,14 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
         viewModelScope.launch {
             try {
                 val response = movieRepository.getPopularMovies("c51c823be371778659b3eb1cc37de357", 1)
+                val baseImageUrl = "https://image.tmdb.org/t/p/w500/"
                 val movieDataList = response.results.map { movie ->
                     MovieData(
                         movieTitle = movie.title,
                         releaseDate = movie.release_date,
                         popularity = (movie.vote_average?.times(10))?.toInt(),
-                        imageUrl = movie.poster_path
+                        imageUrl = movie.poster_path?.let { baseImageUrl + it },
+                        overview = movie.overview
                     )
                 }
                 _movieListUIState.update {
@@ -73,12 +76,14 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
         viewModelScope.launch {
             try {
                 val movieResponse = movieRepository.getPopularMovies("c51c823be371778659b3eb1cc37de357", currentPage + 1)
+                val baseImageUrl = "https://image.tmdb.org/t/p/w500/"
                 val newMovies = movieResponse.results.map { movie ->
                     MovieData(
                         movieTitle = movie.title,
                         releaseDate = movie.release_date,
                         popularity = (movie.vote_average?.times(10))?.toInt(),
-                        imageUrl = movie.poster_path
+                        imageUrl = movie.poster_path?.let { baseImageUrl + it },
+                        overview = movie.overview
                     )
                 }
                 _movieListUIState.update {

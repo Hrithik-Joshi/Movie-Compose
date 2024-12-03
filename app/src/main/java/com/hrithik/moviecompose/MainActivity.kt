@@ -11,16 +11,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import com.hrithik.moviecompose.ui.navigation.NavigationHost
 import com.hrithik.moviecompose.ui.screens.BottomNavigationBar
 import com.hrithik.moviecompose.ui.theme.MovieComposeTheme
-import com.hrithik.moviecompose.viewModel.MovieListViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
-    private val movieListViewModel: MovieListViewModel by viewModel()
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {

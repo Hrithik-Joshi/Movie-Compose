@@ -1,34 +1,28 @@
 package com.hrithik.moviecompose.ui.screens
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -36,14 +30,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
 import com.hrithik.moviecompose.viewModel.MovieListViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -51,6 +41,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun MovieCardList(movieListViewModel: MovieListViewModel = koinViewModel()) {
     val movieDetails by movieListViewModel.movieListUIState.collectAsState()
+    var selectedMovie by remember { mutableStateOf<MovieListViewModel.MovieData?>(null) }
+    var isDialogVisible by remember { mutableStateOf(false) }
     val scrollState = rememberLazyGridState()
     LaunchedEffect(scrollState) {
         snapshotFlow { scrollState.layoutInfo.visibleItemsInfo }
@@ -97,7 +89,11 @@ fun MovieCardList(movieListViewModel: MovieListViewModel = koinViewModel()) {
                             imageUrl = movie.imageUrl,
                             likes = movie.popularity,
                             title = movie.movieTitle,
-                            releaseDate = movie.releaseDate
+                            releaseDate = movie.releaseDate,
+                            onClick = {
+                                selectedMovie = movie
+                                isDialogVisible = true
+                            }
                         )
                     }
                     if (movieDetails.isLoadingNextPage) {
@@ -118,6 +114,12 @@ fun MovieCardList(movieListViewModel: MovieListViewModel = koinViewModel()) {
                 }
             }
         }
+        if (isDialogVisible && selectedMovie != null) {
+            MovieDetailsDialog(
+                movie = selectedMovie!!,
+                onDismiss = { isDialogVisible = false }
+            )
+        }
     }
 }
 
@@ -127,7 +129,6 @@ fun CustomerCircularProgressBar(
     startAngle: Float = 270f,
     size: Dp = 40.dp,
     strokeWidth: Dp = 12.dp,
-    backgroundArcColor: Color = Color.LightGray,
     progressArcColor1: Color = Color.Blue,
     progressArcColor2: Color = progressArcColor1,
     modifier: Modifier = Modifier
@@ -176,10 +177,4 @@ fun CustomerCircularProgressBarPreview() {
         progressArcColor1 = Color(0xFF673AB7),
         progressArcColor2 = Color(0xFF4CAF50),
     )
-}
-
-@Preview
-@Composable
-fun MovieListPreview() {
-    MovieCard("https://images.app.goo.gl/YBS3XeHqztnAgEkcA", 100, "Terrifier 3", "Oct 09, 2024")
 }
