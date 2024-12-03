@@ -2,8 +2,7 @@ package com.hrithik.moviecompose.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hrithik.moviecompose.model.repository.MovieRepository
-import com.hrithik.moviecompose.viewModel.MovieListViewModel.MovieListViewModelState
+import com.hrithik.moviecompose.data.repository.MovieRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

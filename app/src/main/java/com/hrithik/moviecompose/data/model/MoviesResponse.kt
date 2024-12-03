@@ -1,4 +1,4 @@
-package com.hrithik.moviecompose.model.entities
+package com.hrithik.moviecompose.data.model
 
 data class MovieResponse(
     val page: Int,

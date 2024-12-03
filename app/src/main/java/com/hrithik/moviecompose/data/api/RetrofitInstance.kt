@@ -1,4 +1,4 @@
-package com.hrithik.moviecompose.model.api
+package com.hrithik.moviecompose.data.api
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

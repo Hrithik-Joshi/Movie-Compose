@@ -1,6 +1,6 @@
 package com.hrithik.moviecompose
 
-import com.hrithik.moviecompose.model.repository.MovieRepository
+import com.hrithik.moviecompose.data.repository.MovieRepository
 import com.hrithik.moviecompose.viewModel.MovieListViewModel
 import com.hrithik.moviecompose.viewModel.SearchViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel

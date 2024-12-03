@@ -1,8 +1,7 @@
-package com.hrithik.moviecompose.model.repository
+package com.hrithik.moviecompose.data.repository
 
-import com.hrithik.moviecompose.model.api.RetrofitInstance
-import com.hrithik.moviecompose.model.entities.Movie
-import com.hrithik.moviecompose.model.entities.MovieResponse
+import com.hrithik.moviecompose.data.api.RetrofitInstance
+import com.hrithik.moviecompose.data.model.MovieResponse
 
 class MovieRepository {
 
