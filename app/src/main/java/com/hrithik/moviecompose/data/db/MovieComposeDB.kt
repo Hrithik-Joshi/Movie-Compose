@@ -17,7 +17,7 @@ abstract class MovieComposeDatabase: RoomDatabase() {
         @Volatile
         private var INSTANCE: MovieComposeDatabase? = null
 
-        fun getInstance(context: Context) {
+        fun getInstance(context: Context): MovieComposeDatabase {
             synchronized(this) {
                 var instance = INSTANCE
                 if (instance == null) {
@@ -27,6 +27,8 @@ abstract class MovieComposeDatabase: RoomDatabase() {
                         "movie_compose_db"
                     ).build()
                 }
+                INSTANCE = instance
+                return instance
             }
         }
     }
