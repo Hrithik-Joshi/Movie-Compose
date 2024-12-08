@@ -2,6 +2,7 @@ package com.hrithik.moviecompose.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hrithik.moviecompose.data.model.Movie
 import com.hrithik.moviecompose.data.repository.MovieRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,10 +16,13 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
         INIT,
         IN_PROGRESS,
         SUCCESS_MOVIE_LIST,
-        ERROR_MOVIE_LIST
+        ERROR_MOVIE_LIST,
+        SUCCESS_DB,
+        ERROR_IN_DB,
     }
 
     data class MovieData(
+        val movie_id: Int? = null,
         val movieTitle: String? = null,
         val releaseDate: String? = null,
         val popularity: Int? = null, // Converted to percentage
@@ -32,6 +36,7 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
         val currentPage: Int = 1,
         val isLoadingNextPage: Boolean = false
     )
+
 
     private val _movieListUIState = MutableStateFlow(MovieUIState())
     val movieListUIState: StateFlow<MovieUIState> = _movieListUIState.asStateFlow()
@@ -48,6 +53,7 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
                 val baseImageUrl = "https://image.tmdb.org/t/p/w500/"
                 val movieDataList = response.results.map { movie ->
                     MovieData(
+                        movie_id = movie.id,
                         movieTitle = movie.title,
                         releaseDate = movie.release_date,
                         popularity = (movie.vote_average?.times(10))?.toInt(),
@@ -79,6 +85,7 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
                 val baseImageUrl = "https://image.tmdb.org/t/p/w500/"
                 val newMovies = movieResponse.results.map { movie ->
                     MovieData(
+                        movie_id = movie.id,
                         movieTitle = movie.title,
                         releaseDate = movie.release_date,
                         popularity = (movie.vote_average?.times(10))?.toInt(),
@@ -98,4 +105,32 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
             }
         }
     }
+
+    fun insertMovieToDB(movie: Movie) {
+        viewModelScope.launch {
+            try {
+                movieRepository.insertMovieToDB(movie)
+            } catch (e: Exception) {
+                _movieListUIState.update {
+                    it.copy(movieUIState = MovieListViewModelState.ERROR_IN_DB)
+                }
+            }
+        }
+    }
+
+    fun deleteMovieFromDB(movieId: Int) {
+        viewModelScope.launch {
+            try {
+                movieRepository.deleteMovieFromDB(movieId)
+                _movieListUIState.update{
+                    it.copy(movieUIState = MovieListViewModelState.SUCCESS_DB)
+                }
+            } catch (e: Exception) {
+                _movieListUIState.update {
+                    it.copy(movieUIState = MovieListViewModelState.ERROR_IN_DB)
+                }
+            }
+        }
+    }
+
 }
