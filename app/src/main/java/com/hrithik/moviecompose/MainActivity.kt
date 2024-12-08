@@ -6,11 +6,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.hrithik.moviecompose.ui.navigation.NavigationHost
 import com.hrithik.moviecompose.ui.screens.BottomNavigationBar
@@ -33,15 +35,38 @@ class MainActivity : ComponentActivity() {
                             onItemSelected = { index ->
                                 selectedIconIndex = index
                                 when (index) {
-                                    0 -> navController.navigate("movie_list")
-                                    1 -> navController.navigate("search")
-                                    2 -> navController.navigate("favorites")
+                                    0 -> navController.navigate("movie_list") {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            saveState = true
+                                        }
+                                        restoreState = true
+                                        launchSingleTop = true
+                                    }
+
+                                    1 -> navController.navigate("search") {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            saveState = true
+                                        }
+                                        restoreState = true
+                                        launchSingleTop = true
+                                    }
+
+                                    2 -> navController.navigate("favorites") {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            saveState = true
+                                        }
+                                        restoreState = true
+                                        launchSingleTop = true
+                                    }
                                 }
                             }
                         )
                     }
-                ) {
-                    NavigationHost(navController = navController)
+                ) { innerPadding ->
+                    NavigationHost(
+                        navController = navController,
+                        modifier = Modifier.padding(innerPadding)
+                    )
                     BackHandler {
                         // Do nothing to completely disable the back press
                     }

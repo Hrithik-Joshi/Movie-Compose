@@ -38,12 +38,13 @@ class SearchViewModel(private val movieRepository: MovieRepository) : ViewModel(
         viewModelScope.launch {
             try {
                 val response = movieRepository.searchMovies(apiKey, query)
+                val baseImageUrl = "https://image.tmdb.org/t/p/w500/"
                 val movieDataList = response.results.map { movie ->
                     MovieData(
                         movieTitle = movie.title,
                         releaseDate = movie.release_date,
                         popularity = (movie.vote_average?.times(10))?.toInt(),
-                        imageUrl = movie.poster_path
+                        imageUrl = movie.poster_path?.let { baseImageUrl + it },
                     )
                 }
                 if (movieDataList.isEmpty()) {

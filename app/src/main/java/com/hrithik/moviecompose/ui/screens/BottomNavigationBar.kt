@@ -16,13 +16,22 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.hrithik.moviecompose.viewModel.BottomNavigationViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun BottomNavigationBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
+fun BottomNavigationBar(
+    selectedIndex: Int, onItemSelected: (Int) -> Unit,
+    viewModel: BottomNavigationViewModel = koinViewModel()
+) {
+    val favoritesCount by viewModel.favoritesCount.collectAsState()
+
     val items = listOf(
         BottomNavigationItem(
             title = "Movies",
@@ -40,8 +49,8 @@ fun BottomNavigationBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
             title = "Favorites",
             selectedIcon = Icons.Filled.Favorite,
             unselectedIcon = Icons.Outlined.Favorite,
-            notification = true,
-            badgeCount = 5
+            notification = favoritesCount > 0,
+            badgeCount = favoritesCount
         )
     )
 
@@ -59,8 +68,10 @@ fun BottomNavigationBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
                                     contentColor = Color.White,
                                     containerColor = Color.Red
                                 ) {
-                                    Text(text = item.badgeCount.toString(),
-                                        style = MaterialTheme.typography.bodySmall)
+                                    Text(
+                                        text = item.badgeCount.toString(),
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
                                 }
                             }
                         }
@@ -73,7 +84,10 @@ fun BottomNavigationBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
                     }
                 },
                 label = {
-                    Text(text = item.title, color = if (selectedIndex == index) Color.Red else Color.Gray)
+                    Text(
+                        text = item.title,
+                        color = if (selectedIndex == index) Color.Red else Color.Gray
+                    )
                 }
             )
         }

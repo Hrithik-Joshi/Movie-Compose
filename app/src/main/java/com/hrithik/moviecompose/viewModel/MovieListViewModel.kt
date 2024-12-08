@@ -19,6 +19,8 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
         ERROR_MOVIE_LIST,
         SUCCESS_DB,
         ERROR_IN_DB,
+        IS_PRESENT,
+        NOT_PRESENT,
     }
 
     data class MovieData(
@@ -131,6 +133,10 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
                 }
             }
         }
+    }
+
+    suspend fun isMovieFavorite(movieId: Int): Boolean {
+        return movieRepository.findMovieInDB(movieId)
     }
 
 }

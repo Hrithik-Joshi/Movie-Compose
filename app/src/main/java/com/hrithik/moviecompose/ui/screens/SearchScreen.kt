@@ -1,17 +1,19 @@
 package com.hrithik.moviecompose.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -27,19 +29,15 @@ import androidx.compose.ui.unit.dp
 import com.hrithik.moviecompose.viewModel.SearchViewModel
 import org.koin.androidx.compose.koinViewModel
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SearchScreen(
     searchMovieViewModel: SearchViewModel = koinViewModel()
 ) {
     val searchResults by searchMovieViewModel.searchMovieUIState.collectAsState()
     var searchText by remember { mutableStateOf("") }
-    Column(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(WindowInsets.systemBars.asPaddingValues())
-        ) {
-            // Search Bar
+    Scaffold(
+        topBar = {
             OutlinedTextField(
                 value = searchText,
                 onValueChange = {
@@ -56,11 +54,21 @@ fun SearchScreen(
                     .fillMaxWidth()
                     .padding(16.dp),
                 shape = RoundedCornerShape(24.dp),
-                singleLine = true
+                singleLine = true,
+                trailingIcon = {
+                    if (searchText.isNotEmpty()) {
+                        IconButton(onClick = { searchText = "" }) {
+                            Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear")
+                        }
+                    }
+                }
             )
+        },
+        content = { padding->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(padding)
             ) {
                 when (searchResults.movieUIState) {
                     SearchViewModel.SearchViewModelState.IN_PROGRESS -> {
@@ -90,12 +98,10 @@ fun SearchScreen(
                             )
                         }
                     }
-
                     else -> {
-                        // Search Results
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize()
-                                .padding(bottom = 80.dp)
+                            modifier = Modifier
+                                .fillMaxSize()
                         ) {
                             items(searchResults.movies.size) { index ->
                                 val movie = searchResults.movies[index]
@@ -104,14 +110,14 @@ fun SearchScreen(
                                     likes = movie.popularity,
                                     title = movie.movieTitle,
                                     releaseDate = movie.releaseDate,
-                                    onClick =  {}
+                                    onClick = {}
                                 )
                             }
                         }
                     }
                 }
             }
-        }
-    }
+        })
 }
+
 

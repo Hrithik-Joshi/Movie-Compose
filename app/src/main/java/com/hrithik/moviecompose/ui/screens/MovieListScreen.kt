@@ -21,6 +21,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,77 +67,79 @@ fun MovieCardList(movieListViewModel: MovieListViewModel = koinViewModel()) {
                 }
             }
     }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        when (movieDetails.movieUIState) {
-            MovieListViewModel.MovieListViewModelState.IN_PROGRESS -> {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .align(alignment = Alignment.Center)
-                )
-            }
+    Scaffold(snackbarHost = {
+    }, content = { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            when (movieDetails.movieUIState) {
+                MovieListViewModel.MovieListViewModelState.IN_PROGRESS -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(alignment = Alignment.Center)
+                    )
+                }
 
-            MovieListViewModel.MovieListViewModelState.ERROR_MOVIE_LIST -> {
-                Text(
-                    text = "Failed to load movies. Please try again.",
-                    modifier = Modifier.fillMaxSize(),
-                    color = Color.Black,
-                    textAlign = TextAlign.Center
-                )
-            }
+                MovieListViewModel.MovieListViewModelState.ERROR_MOVIE_LIST -> {
+                    Text(
+                        text = "Failed to load movies. Please try again.",
+                        modifier = Modifier.fillMaxSize(),
+                        color = Color.Black,
+                        textAlign = TextAlign.Center
+                    )
+                }
 
-            else -> {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    state = scrollState,
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(movieDetails.movies.size) { index ->
-                        val movie = movieDetails.movies[index]
-                        MovieCard(
-                            imageUrl = movie.imageUrl,
-                            likes = movie.popularity,
-                            title = movie.movieTitle,
-                            releaseDate = movie.releaseDate,
-                            onClick = {
-                                selectedMovie = movie
-                                isDialogVisible = true
-                            }
-                        )
-                    }
-                    if (movieDetails.isLoadingNextPage) {
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(
+                else -> {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        state = scrollState,
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(movieDetails.movies.size) { index ->
+                            val movie = movieDetails.movies[index]
+                            MovieCard(
+                                imageUrl = movie.imageUrl,
+                                likes = movie.popularity,
+                                title = movie.movieTitle,
+                                releaseDate = movie.releaseDate,
+                                onClick = {
+                                    selectedMovie = movie
+                                    isDialogVisible = true
+                                }
+                            )
+                        }
+                        if (movieDetails.isLoadingNextPage) {
+                            item {
+                                Box(
                                     modifier = Modifier
-                                        .align(alignment = Alignment.Center)
-                                )
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier
+                                            .align(alignment = Alignment.Center)
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
+            if (isDialogVisible && selectedMovie != null) {
+                MovieDetailsDialog(
+                    movie = selectedMovie!!,
+                    onDismiss = { isDialogVisible = false },
+                    viewModel = movieListViewModel
+                )
+            }
         }
-        if (isDialogVisible && selectedMovie != null) {
-            MovieDetailsDialog(
-                movie = selectedMovie!!,
-                onDismiss = { isDialogVisible = false },
-                movieDetails = movieDetails,
-                viewModel = movieListViewModel
-            )
-        }
-    }
+    })
 }
 
 @Composable
@@ -187,11 +190,15 @@ fun CustomerCircularProgressBar(
 @Composable
 fun MovieDetailsDialog(
     movie: MovieListViewModel.MovieData, onDismiss: () -> Unit,
-    movieDetails: MovieListViewModel.MovieUIState,
     viewModel: MovieListViewModel
 ) {
     var isFavorite by remember { mutableStateOf(false) }
-
+    LaunchedEffect(movie.movie_id) {
+        movie.movie_id?.let { movieId ->
+            val isMoviePresent = viewModel.isMovieFavorite(movieId)
+            isFavorite = isMoviePresent
+        }
+    }
     AlertDialog(
         onDismissRequest = { onDismiss() },
         confirmButton = {},
@@ -236,11 +243,7 @@ fun MovieDetailsDialog(
                         .padding(top = 8.dp)
                 ) {
                     Text(
-                        text = when {
-                            !isFavorite -> "Add To Favorite"
-                            isFavorite && movieDetails.movieUIState == MovieListViewModel.MovieListViewModelState.SUCCESS_DB -> "Remove From Favorite"
-                            else -> "Processing..."
-                        },
+                        text = if (isFavorite) "Remove From Favorite" else "Add To Favorite",
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .padding(5.dp)
@@ -248,11 +251,7 @@ fun MovieDetailsDialog(
                     Icon(
                         imageVector = Icons.Filled.Favorite,
                         contentDescription = null,
-                        tint = when {
-                            isFavorite && movieDetails.movieUIState == MovieListViewModel.MovieListViewModelState.SUCCESS_DB -> Color.Red
-                            !isFavorite -> Color.Gray
-                            else -> Color.Gray
-                        },
+                        tint = if (isFavorite) Color.Red else Color.Gray,
                         modifier = Modifier
                             .size(32.dp)
                             .pointerInput(Unit) {

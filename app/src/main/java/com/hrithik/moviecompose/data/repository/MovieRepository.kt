@@ -6,6 +6,7 @@ import com.hrithik.moviecompose.data.db.MovieComposeDatabase
 import com.hrithik.moviecompose.data.db.MovieDao
 import com.hrithik.moviecompose.data.model.Movie
 import com.hrithik.moviecompose.data.model.MovieResponse
+import kotlinx.coroutines.flow.Flow
 
 class MovieRepository(context: Context) {
 
@@ -30,6 +31,15 @@ class MovieRepository(context: Context) {
 
     suspend fun deleteMovieFromDB(movieId: Int){
         movieDao.deleteMovieById(movieId)
+    }
+
+    suspend fun findMovieInDB(movieId: Int): Boolean {
+       val movie = movieDao.findMovieById(movieId)
+        return movie != null
+    }
+
+    fun getFavoritesCount(): Flow<Int> {
+        return movieDao.getFavoritesCount()
     }
 
 }

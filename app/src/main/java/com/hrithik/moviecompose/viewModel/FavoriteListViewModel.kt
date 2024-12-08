@@ -61,6 +61,7 @@ class FavoriteListViewModel(private val movieRepository: MovieRepository) : View
                 }
                 _movieDBState.update {
                     it.copy(
+                        movies = it.movies + movieDataList,
                         favoriteUIState = FavoriteListModelState.SUCCESS_MOVIE_LIST
                     )
                 }
@@ -70,5 +71,9 @@ class FavoriteListViewModel(private val movieRepository: MovieRepository) : View
                 }
             }
         }
+    }
+
+    fun clearMovieDB() {
+        TODO("Not yet implemented")
     }
 }
