@@ -24,4 +24,7 @@ interface MovieDao {
 
     @Query("SELECT COUNT(*) FROM movies_table")
     fun getFavoritesCount(): Flow<Int>
+
+    @Query("DELETE FROM movies_table")
+    suspend fun clearAllMovie()
 }

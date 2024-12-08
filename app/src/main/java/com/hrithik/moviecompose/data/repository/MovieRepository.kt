@@ -42,4 +42,8 @@ class MovieRepository(context: Context) {
         return movieDao.getFavoritesCount()
     }
 
+    suspend fun clearMovieInDB() {
+        return movieDao.clearAllMovie()
+    }
+
 }

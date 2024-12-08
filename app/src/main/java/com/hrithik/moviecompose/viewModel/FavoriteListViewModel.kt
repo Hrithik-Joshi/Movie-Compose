@@ -74,6 +74,12 @@ class FavoriteListViewModel(private val movieRepository: MovieRepository) : View
     }
 
     fun clearMovieDB() {
-        TODO("Not yet implemented")
+        viewModelScope.launch {
+            try {
+                movieRepository.clearMovieInDB()
+            }catch (e: Exception){
+                print(message = e.message)
+            }
+        }
     }
 }
