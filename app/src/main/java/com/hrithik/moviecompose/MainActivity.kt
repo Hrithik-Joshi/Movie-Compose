@@ -35,29 +35,9 @@ class MainActivity : ComponentActivity() {
                             onItemSelected = { index ->
                                 selectedIconIndex = index
                                 when (index) {
-                                    0 -> navController.navigate("movie_list") {
-                                        popUpTo(navController.graph.startDestinationId) {
-                                            saveState = true
-                                        }
-                                        restoreState = true
-                                        launchSingleTop = true
-                                    }
-
-                                    1 -> navController.navigate("search") {
-                                        popUpTo(navController.graph.startDestinationId) {
-                                            saveState = true
-                                        }
-                                        restoreState = true
-                                        launchSingleTop = true
-                                    }
-
-                                    2 -> navController.navigate("favorites") {
-                                        popUpTo(navController.graph.startDestinationId) {
-                                            saveState = true
-                                        }
-                                        restoreState = true
-                                        launchSingleTop = true
-                                    }
+                                    0 -> navController.navigate("movie_list")
+                                    1 -> navController.navigate("search")
+                                    2 -> navController.navigate("favorites")
                                 }
                             }
                         )

@@ -54,7 +54,7 @@ class FavoriteListViewModel(private val movieRepository: MovieRepository) : View
                         movieId = movie.id,
                         movieTitle = movie.title,
                         releaseDate = movie.release_date,
-                        popularity = (movie.vote_average?.times(10))?.toInt(),
+                        popularity = (movie.vote_average?.toInt()),
                         imageUrl = movie.poster_path?.let { baseImageUrl + it },
                         overview = movie.overview
                     )
@@ -62,7 +62,11 @@ class FavoriteListViewModel(private val movieRepository: MovieRepository) : View
                 _movieDBState.update {
                     it.copy(
                         movies = it.movies + movieDataList,
-                        favoriteUIState = FavoriteListModelState.SUCCESS_MOVIE_LIST
+                        favoriteUIState = if (movieDataList.isEmpty()) {
+                            FavoriteListModelState.NO_RESULTS
+                        } else {
+                            FavoriteListModelState.SUCCESS_MOVIE_LIST
+                        }
                     )
                 }
             } catch (e: Exception) {
@@ -77,7 +81,14 @@ class FavoriteListViewModel(private val movieRepository: MovieRepository) : View
         viewModelScope.launch {
             try {
                 movieRepository.clearMovieInDB()
-            }catch (e: Exception){
+                _movieDBState.update {
+                    it.copy(
+                        favoriteUIState = FavoriteListModelState.NO_RESULTS,
+                        movies = emptyList()
+                    )
+
+                }
+            } catch (e: Exception) {
                 print(message = e.message)
             }
         }
